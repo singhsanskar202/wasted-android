@@ -44,18 +44,22 @@ class UsageTrackingService : Service() {
         val db = AppDatabase.getInstance(applicationContext)
         val repo = UsageRepository(applicationContext, db.usageDao())
         while (true) {
-            val tracked = prefs.trackedPackages.first()
-            if (tracked.isNotEmpty()) {
-                repo.syncFromUsageStats(tracked)
-                _totalSeconds.value = repo.loadToday().totalSeconds()
+            try {
+                val tracked = prefs.trackedPackages.first()
+                if (tracked.isNotEmpty()) {
+                    repo.syncFromUsageStats(tracked)
+                    _totalSeconds.value = repo.loadToday().totalSeconds()
+                }
+            } catch (e: Exception) {
+                // continue polling on next tick
             }
             delay(30_000)
         }
     }
 
     override fun onDestroy() {
-        scope.cancel()
         stopForeground(STOP_FOREGROUND_REMOVE)
+        scope.cancel()
         super.onDestroy()
     }
 }

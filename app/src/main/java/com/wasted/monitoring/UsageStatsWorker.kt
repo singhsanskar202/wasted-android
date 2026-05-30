@@ -16,23 +16,27 @@ import java.util.concurrent.TimeUnit
 class UsageStatsWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
-        val prefs = WastedPrefs(applicationContext)
-        val trackedPackages = prefs.trackedPackages.first()
-        if (trackedPackages.isEmpty()) return Result.success()
+        return try {
+            val prefs = WastedPrefs(applicationContext)
+            val trackedPackages = prefs.trackedPackages.first()
+            if (trackedPackages.isEmpty()) return Result.success()
 
-        val db = AppDatabase.getInstance(applicationContext)
-        val repo = UsageRepository(applicationContext, db.usageDao())
+            val db = AppDatabase.getInstance(applicationContext)
+            val repo = UsageRepository(applicationContext, db.usageDao())
 
-        repo.syncFromUsageStats(trackedPackages)
-        repo.pruneOldData()
+            repo.syncFromUsageStats(trackedPackages)
+            repo.pruneOldData()
 
-        val today = repo.loadToday()
-        val totalSeconds = today.totalSeconds()
+            val today = repo.loadToday()
+            val totalSeconds = today.totalSeconds()
 
-        updatePersistentNotification(totalSeconds)
-        checkMilestones(totalSeconds)
+            updatePersistentNotification(totalSeconds)
+            checkMilestones(totalSeconds, prefs)
 
-        return Result.success()
+            Result.success()
+        } catch (e: Exception) {
+            Result.failure()
+        }
     }
 
     private fun updatePersistentNotification(totalSeconds: Int) {
@@ -45,10 +49,13 @@ class UsageStatsWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker
         }
     }
 
-    private fun checkMilestones(totalSeconds: Int) {
+    private suspend fun checkMilestones(totalSeconds: Int, prefs: WastedPrefs) {
         val hours = totalSeconds / 3600
-        if (hours > 0 && totalSeconds % 3600 < 300) {
+        if (hours <= 0) return
+        val lastNotified = prefs.lastMilestoneHour.first()
+        if (hours > lastNotified) {
             NotificationHelper.showMilestoneNotification(applicationContext, hours)
+            prefs.setLastMilestoneHour(hours)
         }
     }
 

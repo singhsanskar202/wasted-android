@@ -3,6 +3,7 @@ package com.wasted.prefs
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -15,9 +16,10 @@ private val Context.dataStore by preferencesDataStore("wasted_prefs")
 
 class WastedPrefs(private val context: Context) {
     companion object {
-        private val KEY_TRACKED   = stringSetPreferencesKey("tracked_packages")
-        private val KEY_NAMES     = stringPreferencesKey("display_names_json")
-        private val KEY_ONBOARDED = booleanPreferencesKey("onboarded")
+        private val KEY_TRACKED          = stringSetPreferencesKey("tracked_packages")
+        private val KEY_NAMES            = stringPreferencesKey("display_names_json")
+        private val KEY_ONBOARDED        = booleanPreferencesKey("onboarded")
+        private val KEY_LAST_MILESTONE   = intPreferencesKey("last_milestone_hour")
     }
 
     val trackedPackages: Flow<Set<String>> = context.dataStore.data
@@ -40,5 +42,12 @@ class WastedPrefs(private val context: Context) {
 
     suspend fun setOnboarded() {
         context.dataStore.edit { it[KEY_ONBOARDED] = true }
+    }
+
+    val lastMilestoneHour: Flow<Int> = context.dataStore.data
+        .map { it[KEY_LAST_MILESTONE] ?: -1 }
+
+    suspend fun setLastMilestoneHour(hour: Int) {
+        context.dataStore.edit { it[KEY_LAST_MILESTONE] = hour }
     }
 }
