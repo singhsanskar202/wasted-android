@@ -1,15 +1,13 @@
 package com.wasted.data.model
 
-import java.util.UUID
-
 data class DangerZone(
-    val id: String = UUID.randomUUID().toString(),
     val startHour: Int,
     val endHour: Int,
     val level: Level,
     val seconds: Int,
     val appNames: List<String>
 ) {
+    val id: String get() = "${startHour}_${endHour}_${level}"
     enum class Level { CLEAN, LOW, MODERATE, DANGER }
 }
 
