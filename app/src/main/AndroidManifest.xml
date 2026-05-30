@@ -26,6 +26,7 @@
 
         <service
             android:name=".monitoring.UsageTrackingService"
+            android:exported="false"
             android:foregroundServiceType="dataSync"/>
 
         <receiver
