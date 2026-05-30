@@ -1,6 +1,7 @@
 package com.wasted.ui.onboarding
 
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -40,13 +41,21 @@ fun PermissionScreen(onContinue: () -> Unit) {
             )
             Spacer(Modifier.height(12.dp))
             Text(
-                "Settings → Wasted → Permit Usage Access",
+                "Tap the button below, then enable the toggle.",
                 fontSize = 13.sp, color = WastedOrange.copy(alpha = 0.75f)
             )
         }
         Button(
             onClick = {
-                context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                }
+                // Some OEMs don't support the package URI — fall back to the list
+                try {
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                }
                 onContinue()
             },
             modifier = Modifier
