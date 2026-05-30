@@ -18,7 +18,7 @@ class UsageRepository(
         dao.loadByDate(DailyUsage.todayString()) ?: DailyUsage(date = DailyUsage.todayString())
 
     suspend fun loadHistory(): List<DailyUsage> =
-        dao.loadHistory(excludeDate = DailyUsage.todayString(), limit = 30)
+        dao.loadHistory(excludeDate = DailyUsage.todayString(), limit = 30).reversed()
 
     suspend fun loadYesterday(): DailyUsage? {
         val cal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }

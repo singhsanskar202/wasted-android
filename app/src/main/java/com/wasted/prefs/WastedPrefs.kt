@@ -1,6 +1,7 @@
 package com.wasted.prefs
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -16,7 +17,7 @@ class WastedPrefs(private val context: Context) {
     companion object {
         private val KEY_TRACKED   = stringSetPreferencesKey("tracked_packages")
         private val KEY_NAMES     = stringPreferencesKey("display_names_json")
-        private val KEY_ONBOARDED = stringPreferencesKey("onboarded")
+        private val KEY_ONBOARDED = booleanPreferencesKey("onboarded")
     }
 
     val trackedPackages: Flow<Set<String>> = context.dataStore.data
@@ -28,7 +29,7 @@ class WastedPrefs(private val context: Context) {
         }
 
     val isOnboarded: Flow<Boolean> = context.dataStore.data
-        .map { it[KEY_ONBOARDED] == "true" }
+        .map { it[KEY_ONBOARDED] ?: false }
 
     suspend fun setTrackedPackages(packages: Set<String>, names: Map<String, String>) {
         context.dataStore.edit {
@@ -38,6 +39,6 @@ class WastedPrefs(private val context: Context) {
     }
 
     suspend fun setOnboarded() {
-        context.dataStore.edit { it[KEY_ONBOARDED] = "true" }
+        context.dataStore.edit { it[KEY_ONBOARDED] = true }
     }
 }

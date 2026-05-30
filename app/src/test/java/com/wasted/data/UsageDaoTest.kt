@@ -37,12 +37,12 @@ class UsageDaoTest {
         assertNull(db.usageDao().loadByDate("2000-01-01"))
     }
 
-    @Test fun `load history returns rows sorted ascending`() = runBlocking {
+    @Test fun `load history returns rows sorted descending from dao`() = runBlocking {
         db.usageDao().upsert(DailyUsage(date = "2026-05-28"))
         db.usageDao().upsert(DailyUsage(date = "2026-05-27"))
         db.usageDao().upsert(DailyUsage(date = "2026-05-29"))
         val history = db.usageDao().loadHistory(excludeDate = "2026-05-30", limit = 7)
-        assertEquals(listOf("2026-05-27", "2026-05-28", "2026-05-29"), history.map { it.date })
+        assertEquals(listOf("2026-05-29", "2026-05-28", "2026-05-27"), history.map { it.date })
     }
 
     @Test fun `upsert overwrites existing row`() = runBlocking {
