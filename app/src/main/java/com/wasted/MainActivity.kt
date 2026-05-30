@@ -3,14 +3,11 @@ package com.wasted
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wasted.prefs.WastedPrefs
+import com.wasted.ui.home.HomeScreen
+import com.wasted.ui.home.HomeViewModel
+import com.wasted.ui.onboarding.OnboardingScreen
 import com.wasted.ui.theme.WastedTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -23,12 +20,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WastedTheme {
-                Surface(color = Color.Black) {
-                    // Placeholder — replaced in Tasks 8–10
-                    Text(
-                        text = if (isOnboarded) "Home Screen (coming soon)" else "Onboarding (coming soon)",
-                        color = Color.White
-                    )
+                if (isOnboarded) {
+                    val vm: HomeViewModel = viewModel()
+                    HomeScreen(vm)
+                } else {
+                    OnboardingScreen(prefs = prefs, onComplete = { recreate() })
                 }
             }
         }
