@@ -50,4 +50,14 @@ class UsageDaoTest {
         db.usageDao().upsert(DailyUsage(date = "2026-05-30", seconds = mapOf("a" to 200)))
         assertEquals(200, db.usageDao().loadByDate("2026-05-30")?.seconds?.get("a"))
     }
+
+    @Test fun `deleteBefore removes only older rows`() = runBlocking {
+        db.usageDao().upsert(DailyUsage(date = "2026-05-27"))
+        db.usageDao().upsert(DailyUsage(date = "2026-05-28"))
+        db.usageDao().upsert(DailyUsage(date = "2026-05-29"))
+        db.usageDao().deleteBefore("2026-05-29")
+        // rows strictly before 2026-05-29 should be deleted
+        val history = db.usageDao().loadHistory(excludeDate = "2026-05-30", limit = 10)
+        assertEquals(listOf("2026-05-29"), history.map { it.date })
+    }
 }

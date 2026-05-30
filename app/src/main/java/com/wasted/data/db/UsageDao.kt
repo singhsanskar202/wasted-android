@@ -13,7 +13,7 @@ interface UsageDao {
     @Query("SELECT * FROM daily_usage WHERE date = :date LIMIT 1")
     suspend fun loadByDate(date: String): DailyUsage?
 
-    @Query("SELECT * FROM daily_usage WHERE date != :excludeDate ORDER BY date ASC LIMIT :limit")
+    @Query("SELECT * FROM daily_usage WHERE date < :excludeDate ORDER BY date ASC LIMIT :limit")
     suspend fun loadHistory(excludeDate: String, limit: Int): List<DailyUsage>
 
     @Query("DELETE FROM daily_usage WHERE date < :cutoffDate")
