@@ -22,7 +22,7 @@ object InsightEngine {
     ): InsightResult {
         val totalToday = today.hourly.sum()
         val segments = today.hourly.map { zoneLevel(it) }
-        val zones = buildZones(today.hourly, displayNames, today.seconds)
+        val zones = buildZones(today.hourly)
         val weekly = if (history.size >= 7) buildWeekly(history) else null
 
         if (totalToday == 0) return InsightResult(zones, segments, "Clean so far. Come back tonight.", InsightResult.Tone.POSITIVE, weekly)
@@ -100,7 +100,7 @@ object InsightEngine {
         return WeeklyInsight(totals, labels, trend, verdict)
     }
 
-    private fun buildZones(hourly: List<Int>, displayNames: Map<String, String>, appSeconds: Map<String, Int>): List<DangerZone> {
+    private fun buildZones(hourly: List<Int>): List<DangerZone> {
         if (hourly.size != 24) return emptyList()
         val zones = mutableListOf<DangerZone>()
         var i = 0
@@ -109,8 +109,7 @@ object InsightEngine {
             var j = i + 1
             while (j < 24 && zoneLevel(hourly[j]) == level) j++
             val secs = hourly.subList(i, j).sum()
-            val topApps = appSeconds.entries.sortedByDescending { it.value }.take(2).mapNotNull { displayNames[it.key] }
-            zones.add(DangerZone(startHour = i, endHour = j, level = level, seconds = secs, appNames = topApps))
+            zones.add(DangerZone(startHour = i, endHour = j, level = level, seconds = secs, appNames = emptyList()))
             i = j
         }
         return zones
@@ -130,7 +129,7 @@ object InsightEngine {
 
     private fun longestCleanStreak(hourly: List<Int>): Int {
         var best = 0; var current = 0
-        for (h in hourly) { if (h == 0) { current++; if (current > best) best = current } else current = 0 }
+        for (h in hourly) { if (h < LOW_THRESHOLD) { current++; if (current > best) best = current } else current = 0 }
         return best
     }
 
