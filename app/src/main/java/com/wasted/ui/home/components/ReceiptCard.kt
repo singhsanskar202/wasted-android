@@ -51,6 +51,15 @@ fun ReceiptCard(
         )
         Spacer(Modifier.height(2.dp))
 
+        val pct = (totalSeconds / 86400f * 100).toInt().coerceAtMost(100)
+        Text(
+            text = "that's $pct% of your day",
+            fontFamily = FontFamily.Monospace,
+            fontSize = 11.sp,
+            color = Color.White.copy(alpha = 0.4f)
+        )
+        Spacer(Modifier.height(6.dp))
+
         Text(
             text = "SECONDS YOU WON'T GET BACK",
             fontFamily = FontFamily.Monospace,
