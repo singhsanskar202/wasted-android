@@ -49,21 +49,25 @@ class UsageRepository(
             .associate { it.packageName to it.totalTimeInForeground }
     }
 
-    // Returns the package name of the app currently in the foreground, or null.
-    // Uses a 2-second window looking backwards — the most reliable method without
-    // AccessibilityService or shell access.
+    // Returns the package currently in the foreground, or null if we can't determine it.
+    // Strategy: scan the last 10s of events for MOVE_TO_FOREGROUND/MOVE_TO_BACKGROUND pairs.
+    // If the most recent event is a MOVE_TO_FOREGROUND, that app is active.
+    // The 10s window handles the gap between when an app opens and when we next poll.
     fun getForegroundApp(): String? {
         val now = System.currentTimeMillis()
-        val events = usageStatsManager.queryEvents(now - 2000, now) ?: return null
+        val events = usageStatsManager.queryEvents(now - 10_000, now) ?: return null
         val event = UsageEvents.Event()
-        var last: String? = null
+        // Track foreground/background transitions — last known state per package
+        val state = mutableMapOf<String, Boolean>() // true = foreground
         while (events.hasNextEvent()) {
             events.getNextEvent(event)
-            if (event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
-                last = event.packageName
+            when (event.eventType) {
+                UsageEvents.Event.MOVE_TO_FOREGROUND -> state[event.packageName] = true
+                UsageEvents.Event.MOVE_TO_BACKGROUND -> state[event.packageName] = false
             }
         }
-        return last
+        // Return the one package that ended up in foreground state
+        return state.entries.firstOrNull { it.value }?.key
     }
 
     suspend fun syncFromUsageStats(trackedPackages: Set<String>) {

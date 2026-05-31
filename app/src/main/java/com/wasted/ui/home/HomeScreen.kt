@@ -28,20 +28,25 @@ import com.wasted.monitoring.UsageTrackingService
 import com.wasted.ui.home.components.*
 import com.wasted.ui.theme.WastedOrange
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun HomeScreen(vm: HomeViewModel) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
     var liveSeconds by remember { mutableIntStateOf(state.totalSeconds) }
+    // Holds the service's totalSeconds flow once bound; null until connected
+    var serviceFlow by remember { mutableStateOf<StateFlow<Int>?>(null) }
 
-    // Bind to UsageTrackingService for live counter
+    // Bind to UsageTrackingService and grab its totalSeconds flow
     DisposableEffect(Unit) {
         val conn = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-                // observe service total — propagate to liveSeconds
+                serviceFlow = (binder as UsageTrackingService.LocalBinder).getService().totalSeconds
             }
-            override fun onServiceDisconnected(name: ComponentName) {}
+            override fun onServiceDisconnected(name: ComponentName) {
+                serviceFlow = null
+            }
         }
         val intent = Intent(context, UsageTrackingService::class.java)
         context.startForegroundService(intent)
@@ -49,16 +54,18 @@ fun HomeScreen(vm: HomeViewModel) {
         onDispose { context.unbindService(conn) }
     }
 
-    // Refresh ViewModel every 30s
+    // Collect from the service flow whenever it becomes available
+    LaunchedEffect(serviceFlow) {
+        serviceFlow?.collect { liveSeconds = it }
+    }
+
+    // Refresh ViewModel every 30s so insight cards stay fresh
     LaunchedEffect(Unit) {
         while (true) {
             delay(30_000)
             vm.refresh()
         }
     }
-
-    // Sync live seconds from state
-    LaunchedEffect(state.totalSeconds) { liveSeconds = state.totalSeconds }
 
     val animatedSeconds by animateIntAsState(
         targetValue = liveSeconds,

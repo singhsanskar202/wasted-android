@@ -1,5 +1,6 @@
 package com.wasted.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,10 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -83,14 +86,22 @@ fun AppPickerScreen(
                         .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = app.label,
-                        fontSize = 11.sp,
-                        color = if (isSelected) Color.White else Color.White.copy(alpha = 0.5f),
-                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                        maxLines = 2,
-                        textAlign = TextAlign.Center
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(
+                            bitmap = app.icon.toBitmap(48, 48).asImageBitmap(),
+                            contentDescription = app.label,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = app.label,
+                            fontSize = 10.sp,
+                            color = if (isSelected) Color.White else Color.White.copy(alpha = 0.5f),
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                            maxLines = 2,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
