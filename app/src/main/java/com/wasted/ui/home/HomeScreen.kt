@@ -81,7 +81,7 @@ fun HomeScreen(vm: HomeViewModel) {
             lineHeight = 22.sp,
             modifier = Modifier
                 .padding(horizontal = 40.dp)
-                .padding(top = 72.dp, bottom = 60.dp)
+                .padding(top = 52.dp, bottom = 32.dp)
         )
 
         Spacer(Modifier.height(24.dp))

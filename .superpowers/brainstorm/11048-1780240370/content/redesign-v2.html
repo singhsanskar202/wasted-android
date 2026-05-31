@@ -1,0 +1,122 @@
+<h2>Pick a direction</h2>
+<p class="subtitle">Three clean approaches — same data, completely different feel</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#000;border-radius:10px;padding:20px;font-family:-apple-system,sans-serif;color:#fff">
+        <p style="font-style:italic;opacity:0.3;font-size:11px;text-align:center;margin:0 0 20px">You have the same 24 hours as everyone else.</p>
+
+        <!-- big number, raw, centered -->
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:11px;opacity:0.25;letter-spacing:3px;margin-bottom:6px">TODAY</div>
+          <div style="font-size:56px;font-weight:800;line-height:1;letter-spacing:-2px">4h 17m</div>
+          <div style="font-size:11px;color:#ff3b30;margin-top:6px">15,428 seconds gone</div>
+        </div>
+
+        <!-- app list — clean, no bars -->
+        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <span style="opacity:0.5;font-size:12px">VLC</span>
+            <span style="font-size:12px">2h 18m</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <span style="opacity:0.5;font-size:12px">Hinge</span>
+            <span style="font-size:12px">1h 58m</span>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;padding-top:12px;display:flex;justify-content:space-between">
+            <span style="opacity:0.25;font-size:11px">17% of your day</span>
+            <span style="color:#ff3b30;opacity:0.5;font-size:11px">non-refundable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Hours first</h3>
+      <p>Lead with human-readable time (4h 17m), seconds as the subtext. App list as clean rows. Minimal, like iOS Health.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#000;border-radius:10px;padding:20px;font-family:-apple-system,sans-serif;color:#fff">
+        <p style="font-style:italic;opacity:0.3;font-size:11px;text-align:center;margin:0 0 16px">You have the same 24 hours as everyone else.</p>
+
+        <!-- seconds huge, percentage context -->
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:64px;font-weight:900;line-height:1;letter-spacing:-3px;color:#fff">15,428</div>
+          <div style="font-size:12px;opacity:0.25;margin-top:4px;letter-spacing:1px">seconds · 17% of today</div>
+        </div>
+
+        <!-- colored fill bars, bigger -->
+        <div style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:13px;opacity:0.6">VLC</span>
+            <div style="flex:1;margin:0 12px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px">
+              <div style="width:54%;height:100%;background:linear-gradient(90deg,#ff3b30,#ff6b35);border-radius:2px"></div>
+            </div>
+            <span style="font-size:12px;opacity:0.8">8,344s</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;opacity:0.6">Hinge</span>
+            <div style="flex:1;margin:0 12px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px">
+              <div style="width:46%;height:100%;background:linear-gradient(90deg,#ff6b35,#ff9500);border-radius:2px"></div>
+            </div>
+            <span style="font-size:12px;opacity:0.8">7,084s</span>
+          </div>
+        </div>
+
+        <div style="text-align:center;font-size:11px;color:#ff3b30;opacity:0.45;letter-spacing:0.5px">these seconds are non-refundable.</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Seconds hero</h3>
+      <p>Raw seconds huge and centered. Gradient bars for app breakdown. Clean and punchy.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#000;border-radius:10px;padding:20px;font-family:-apple-system,sans-serif;color:#fff">
+        <p style="font-style:italic;opacity:0.3;font-size:11px;text-align:center;margin:0 0 16px">You have the same 24 hours as everyone else.</p>
+
+        <!-- two-column: time + percentage ring feel -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+          <div style="flex:1">
+            <div style="font-size:42px;font-weight:800;line-height:1;letter-spacing:-2px">4h 17m</div>
+            <div style="font-size:11px;color:#ff3b30;margin-top:4px">15,428s today</div>
+          </div>
+          <!-- arc/ring substitute — just a bold % -->
+          <div style="text-align:center;width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,59,48,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font-size:18px;font-weight:700;color:#ff3b30;line-height:1">17%</div>
+            <div style="font-size:8px;opacity:0.3">of day</div>
+          </div>
+        </div>
+
+        <!-- stacked app pills -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">VLC</span>
+            <div style="text-align:right">
+              <div style="font-size:13px">2h 18m</div>
+              <div style="font-size:10px;opacity:0.3">8,344s · 54%</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px">Hinge</span>
+            <div style="text-align:right">
+              <div style="font-size:13px">1h 58m</div>
+              <div style="font-size:10px;opacity:0.3">7,084s · 46%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Cards + ring</h3>
+      <p>Human time as hero, circular % indicator, each app in its own pill card showing both time and seconds. Most structured.</p>
+    </div>
+  </div>
+
+</div>

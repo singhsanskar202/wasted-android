@@ -1,0 +1,81 @@
+<h2>Redesigned home screen</h2>
+<p class="subtitle">Current vs proposed — same data, tighter layout</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Current</div>
+    <div class="mockup-body" style="background:#000;padding:16px;font-family:sans-serif;color:#fff;font-size:12px">
+      <div style="height:60px"></div>
+      <p style="text-align:center;font-style:italic;opacity:0.35;font-size:13px;margin-bottom:60px">You have the same 24 hours as everyone else.</p>
+      <div style="background:#0d0d0d;border-radius:16px;padding:20px;text-align:center;margin-bottom:40px">
+        <div style="font-size:9px;letter-spacing:2px;opacity:0.3;margin-bottom:6px">WASTED CO. • TODAY</div>
+        <div style="font-size:36px;font-weight:700">15,428s</div>
+        <div style="font-size:10px;opacity:0.4;margin:2px 0">that's 17% of your day</div>
+        <div style="font-size:9px;color:#ff4444;letter-spacing:1px;margin-bottom:16px">SECONDS YOU WON'T GET BACK</div>
+        <hr style="border:none;border-top:1px dashed rgba(255,255,255,0.1);margin:12px 0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="opacity:0.6">VLC</span><span>8,344s</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="opacity:0.6">Hinge</span><span>7,084s</span></div>
+        <hr style="border:none;border-top:1px dashed rgba(255,255,255,0.1);margin:12px 0">
+        <div style="font-size:10px;color:#ff4444;opacity:0.6">these seconds are non-refundable.</div>
+      </div>
+      <div style="text-align:center;margin-bottom:40px">
+        <div style="font-size:60px;font-weight:700;opacity:0.2">7</div>
+        <div style="opacity:0.3;font-size:13px">more days until<br>your usage pattern unlocks</div>
+      </div>
+      <div style="background:#111;border-radius:12px;padding:14px;font-size:11px;opacity:0.7">DANGER ZONES card...</div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Proposed</div>
+    <div class="mockup-body" style="background:#000;padding:16px;font-family:sans-serif;color:#fff;font-size:12px">
+      <div style="height:20px"></div>
+      <p style="text-align:center;font-style:italic;opacity:0.3;font-size:12px;margin-bottom:24px;padding:0 20px">You have the same 24 hours as everyone else.</p>
+
+      <!-- Receipt card — tighter, more contrast -->
+      <div style="background:#111;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.06)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:9px;letter-spacing:2px;opacity:0.3;font-family:monospace">WASTED CO.</div>
+            <div style="font-size:38px;font-weight:700;line-height:1;margin-top:4px">15,428s</div>
+            <div style="font-size:11px;opacity:0.35;margin-top:2px;font-family:monospace">17% of today gone</div>
+          </div>
+          <div style="text-align:right;padding-top:4px">
+            <div style="font-size:9px;color:#ff4444;font-family:monospace;letter-spacing:0.5px">WON'T</div>
+            <div style="font-size:9px;color:#ff4444;font-family:monospace;letter-spacing:0.5px">COME</div>
+            <div style="font-size:9px;color:#ff4444;font-family:monospace;letter-spacing:0.5px">BACK.</div>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin:12px 0">
+        <!-- App rows with thicker bars -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="opacity:0.7;font-family:monospace;font-size:12px">VLC</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:80px;height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:54%;height:100%;background:#ff4444;border-radius:3px"></div></div>
+            <span style="font-family:monospace;font-size:12px;min-width:52px;text-align:right">8,344s</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="opacity:0.7;font-family:monospace;font-size:12px">Hinge</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:80px;height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:46%;height:100%;background:#ff6600;border-radius:3px"></div></div>
+            <span style="font-family:monospace;font-size:12px;min-width:52px;text-align:right">7,084s</span>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin:12px 0">
+        <div style="font-size:10px;color:#ff4444;opacity:0.5;font-family:monospace;text-align:center">these seconds are non-refundable.</div>
+      </div>
+
+      <!-- Pattern locked — as a subtle card, not floating -->
+      <div style="background:#0d0d0d;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border:1px solid rgba(255,255,255,0.04)">
+        <div>
+          <div style="font-size:11px;opacity:0.5">usage pattern</div>
+          <div style="font-size:11px;opacity:0.3">unlocks in 7 days</div>
+        </div>
+        <div style="font-size:28px;font-weight:700;opacity:0.15">7</div>
+      </div>
+
+      <div style="background:#111;border-radius:12px;padding:14px;font-size:11px;opacity:0.7">DANGER ZONES card...</div>
+    </div>
+  </div>
+</div>

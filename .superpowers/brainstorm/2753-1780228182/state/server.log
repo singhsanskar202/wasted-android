@@ -1,0 +1,6 @@
+{"type":"server-started","port":62661,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:62661","screen_dir":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/content","state_dir":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/state"}
+{"type":"screen-added","file":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/content/receipt-layout.html"}
+{"type":"screen-added","file":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/content/placement.html"}
+{"type":"screen-added","file":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/content/ragebait.html"}
+{"type":"screen-added","file":"/tmp/wasted-android/.superpowers/brainstorm/2753-1780228182/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}

@@ -1,18 +1,23 @@
 package com.wasted.ui.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+private val Red = Color(0xFFFF3B30)
+private val Orange = Color(0xFFFF6B35)
 
 @Composable
 fun ReceiptCard(
@@ -21,144 +26,150 @@ fun ReceiptCard(
     displayNames: Map<String, String>,
     modifier: Modifier = Modifier
 ) {
-    val topApps = appSeconds.entries
-        .sortedByDescending { it.value }
-        .take(5)
+    val topApps = appSeconds.entries.sortedByDescending { it.value }.take(5)
+    val pct = (totalSeconds / 86400f * 100).toInt().coerceAtMost(100)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .background(Color(0xFF0D0D0D), RoundedCornerShape(16.dp))
-            .padding(horizontal = 20.dp, vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "WASTED CO. • TODAY",
-            fontFamily = FontFamily.Monospace,
-            fontSize = 10.sp,
-            letterSpacing = 2.sp,
-            color = Color.White.copy(alpha = 0.3f)
-        )
-        Spacer(Modifier.height(8.dp))
+    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
 
-        Text(
-            text = "%,ds".format(totalSeconds),
-            fontFamily = FontFamily.Monospace,
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Spacer(Modifier.height(2.dp))
-
-        val pct = (totalSeconds / 86400f * 100).toInt().coerceAtMost(100)
-        Text(
-            text = "that's $pct% of your day",
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            color = Color.White.copy(alpha = 0.4f)
-        )
-        Spacer(Modifier.height(6.dp))
-
-        Text(
-            text = "SECONDS YOU WON'T GET BACK",
-            fontFamily = FontFamily.Monospace,
-            fontSize = 9.sp,
-            letterSpacing = 1.5.sp,
-            color = Color(0xFFFF4444)
-        )
-        Spacer(Modifier.height(20.dp))
-
-        DashedDivider()
-        Spacer(Modifier.height(16.dp))
-
-        if (topApps.isEmpty()) {
-            Text(
-                text = "no tracked apps used today",
-                fontFamily = FontFamily.Monospace,
-                fontSize = 11.sp,
-                color = Color.White.copy(alpha = 0.3f)
-            )
-        } else {
-            topApps.forEachIndexed { index, (pkg, seconds) ->
-                val name = displayNames[pkg] ?: pkg.substringAfterLast('.')
-                val fraction = if (totalSeconds > 0) seconds.toFloat() / totalSeconds else 0f
-                val barColor = if (index == 0) Color(0xFFFF4444) else Color(0xFFFF6600)
-                ReceiptRow(name = name, seconds = seconds, fraction = fraction, barColor = barColor)
-                Spacer(Modifier.height(10.dp))
+        // Hero row: big seconds + ring
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "%,d".format(totalSeconds),
+                    fontSize = 58.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    letterSpacing = (-2).sp,
+                    lineHeight = 58.sp
+                )
+                Text(
+                    text = "seconds wasted today",
+                    fontSize = 12.sp,
+                    color = Color.White.copy(alpha = 0.25f),
+                    letterSpacing = 0.3.sp
+                )
+            }
+            Spacer(Modifier.width(16.dp))
+            // Percentage ring
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(68.dp)
+                    .border(2.dp, Red.copy(alpha = 0.35f), RoundedCornerShape(50))
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "$pct%",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Red,
+                        lineHeight = 20.sp
+                    )
+                    Text(
+                        text = "of day",
+                        fontSize = 8.sp,
+                        color = Color.White.copy(alpha = 0.25f)
+                    )
+                }
             }
         }
 
-        Spacer(Modifier.height(6.dp))
-        DashedDivider()
+        Spacer(Modifier.height(24.dp))
+        Divider()
         Spacer(Modifier.height(16.dp))
 
-        Text(
-            text = "these seconds are non-refundable.",
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            color = Color(0xFFFF4444).copy(alpha = 0.6f),
-            textAlign = TextAlign.Center
-        )
+        // App rows
+        if (topApps.isEmpty()) {
+            Text(
+                text = "no tracked apps used today",
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.25f)
+            )
+        } else {
+            topApps.forEach { (pkg, seconds) ->
+                val name = displayNames[pkg] ?: pkg.substringAfterLast('.')
+                val fraction = if (totalSeconds > 0) seconds.toFloat() / totalSeconds else 0f
+                AppRow(name = name, seconds = seconds, fraction = fraction)
+                Spacer(Modifier.height(12.dp))
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
+        Divider()
+        Spacer(Modifier.height(14.dp))
+
+        // Closing blockquote
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                .background(Red.copy(alpha = 0.05f))
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(2.dp)
+                    .height(36.dp)
+                    .background(Red)
+            )
+            Text(
+                text = "these seconds are non-refundable.",
+                fontSize = 13.sp,
+                fontStyle = FontStyle.Italic,
+                color = Red.copy(alpha = 0.7f),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+            )
+        }
     }
 }
 
 @Composable
-private fun ReceiptRow(
-    name: String,
-    seconds: Int,
-    fraction: Float,
-    barColor: Color
-) {
+private fun AppRow(name: String, seconds: Int, fraction: Float) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = name,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 12.sp,
-            color = Color.White.copy(alpha = 0.7f),
-            modifier = Modifier.weight(1f),
+            fontSize = 14.sp,
+            color = Color.White.copy(alpha = 0.6f),
+            modifier = Modifier.width(90.dp),
             maxLines = 1
         )
-        Spacer(Modifier.width(8.dp))
         Box(
             modifier = Modifier
-                .width(72.dp)
-                .height(3.dp)
-                .background(Color.White.copy(alpha = 0.08f), RoundedCornerShape(2.dp))
+                .weight(1f)
+                .height(4.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(Color.White.copy(alpha = 0.07f))
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(fraction.coerceIn(0f, 1f))
-                    .background(barColor, RoundedCornerShape(2.dp))
+                    .background(
+                        Brush.horizontalGradient(listOf(Red, Orange))
+                    )
             )
         }
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(12.dp))
         Text(
             text = "%,ds".format(seconds),
-            fontFamily = FontFamily.Monospace,
-            fontSize = 12.sp,
-            color = Color.White.copy(alpha = 0.9f)
+            fontSize = 13.sp,
+            color = Color.White.copy(alpha = 0.8f),
+            modifier = Modifier.width(56.dp)
         )
     }
 }
 
 @Composable
-private fun DashedDivider() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        repeat(32) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(1.dp)
-                    .background(Color.White.copy(alpha = 0.12f))
-            )
-        }
-    }
+private fun Divider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Color.White.copy(alpha = 0.06f))
+    )
 }

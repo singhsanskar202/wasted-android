@@ -133,7 +133,7 @@ object InsightEngine {
         return best
     }
 
-    fun timeRangeLabel(start: Int, end: Int) = "${hourLabel(start)}–${hourLabel(end - 1)}"
+    fun timeRangeLabel(start: Int, end: Int) = "${hourLabel(start)}–${hourLabel(end)}"
 
     fun hourLabel(hour: Int): String {
         val h = if (hour % 12 == 0) 12 else hour % 12
