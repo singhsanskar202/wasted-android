@@ -1,6 +1,8 @@
 package com.wasted.monitoring
 
+import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -14,6 +16,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -37,6 +40,17 @@ class UsageTrackingService : Service() {
             NotificationHelper.buildPersistentNotification(this, 0)
         )
         scope.launch { pollLoop() }
+        scope.launch { updateNotificationLoop() }
+    }
+
+    private suspend fun updateNotificationLoop() {
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        _totalSeconds.collectLatest { seconds ->
+            nm.notify(
+                NotificationHelper.NOTIF_PERSISTENT_ID,
+                NotificationHelper.buildPersistentNotification(this, seconds)
+            )
+        }
     }
 
     private suspend fun pollLoop() {
