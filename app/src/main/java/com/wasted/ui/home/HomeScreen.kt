@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wasted.monitoring.UsageTrackingService
 import com.wasted.ui.home.components.*
-import com.wasted.ui.theme.WastedOrange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
@@ -67,19 +63,6 @@ fun HomeScreen(vm: HomeViewModel) {
         }
     }
 
-    val animatedSeconds by animateIntAsState(
-        targetValue = liveSeconds,
-        animationSpec = spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessLow),
-        label = "counter"
-    )
-    val h = animatedSeconds / 3600
-    val m = (animatedSeconds % 3600) / 60
-    val timeString = when {
-        h > 0 -> "${h}h ${m}m"
-        m > 0 -> "${m}m"
-        else  -> "0m"
-    }
-
     Column(
         Modifier
             .fillMaxSize()
@@ -101,38 +84,11 @@ fun HomeScreen(vm: HomeViewModel) {
                 .padding(top = 72.dp, bottom = 60.dp)
         )
 
-        // Big counter
-        Text(
-            "you wasted",
-            fontSize = 14.sp, fontWeight = FontWeight.Light,
-            letterSpacing = 2.sp, color = Color.White.copy(alpha = 0.35f)
-        )
-        Text(
-            timeString,
-            fontSize = 72.sp, fontWeight = FontWeight.Bold, color = Color.White
-        )
-        Text(
-            "on your phone today",
-            fontSize = 14.sp, fontWeight = FontWeight.Light,
-            letterSpacing = 2.sp, color = Color.White.copy(alpha = 0.35f)
-        )
-        Spacer(Modifier.height(32.dp))
-
-        // Equivalent task
-        state.equivalent?.let { eq ->
-            Text(
-                "that's ${eq.description} ${eq.emoji}",
-                fontSize = 15.sp,
-                color = WastedOrange.copy(alpha = 0.75f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 40.dp)
-            )
-            Spacer(Modifier.height(60.dp))
-        } ?: Spacer(Modifier.height(60.dp))
-
-        HorizontalDivider(
-            color = Color.White.copy(alpha = 0.07f),
-            modifier = Modifier.padding(horizontal = 32.dp)
+        Spacer(Modifier.height(24.dp))
+        ReceiptCard(
+            totalSeconds = liveSeconds,
+            appSeconds = state.today.seconds,
+            displayNames = state.displayNames
         )
         Spacer(Modifier.height(40.dp))
 
