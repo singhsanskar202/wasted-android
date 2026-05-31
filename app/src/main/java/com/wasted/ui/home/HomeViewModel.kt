@@ -24,7 +24,8 @@ data class HomeUiState(
     val today: DailyUsage = DailyUsage(date = DailyUsage.todayString()),
     val insightResult: InsightResult? = null,
     val equivalent: EquivalentTaskMapper.Equivalent? = null,
-    val quote: String = ""
+    val quote: String = "",
+    val displayNames: Map<String, String> = emptyMap()
 )
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
@@ -54,7 +55,8 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                     daysLeft = daysLeft,
                     today = today,
                     insightResult = insightResult,
-                    equivalent = equivalent
+                    equivalent = equivalent,
+                    displayNames = displayNames
                 )
             }
         }
