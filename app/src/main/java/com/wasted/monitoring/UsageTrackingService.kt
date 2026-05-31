@@ -16,7 +16,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -26,6 +25,8 @@ class UsageTrackingService : Service() {
     private val scope = CoroutineScope(Dispatchers.IO + job)
     private val _totalSeconds = MutableStateFlow(0)
     val totalSeconds: StateFlow<Int> = _totalSeconds
+
+    private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
     inner class LocalBinder : Binder() {
         fun getService(): UsageTrackingService = this@UsageTrackingService
@@ -40,17 +41,6 @@ class UsageTrackingService : Service() {
             NotificationHelper.buildPersistentNotification(this, 0)
         )
         scope.launch { pollLoop() }
-        scope.launch { updateNotificationLoop() }
-    }
-
-    private suspend fun updateNotificationLoop() {
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        _totalSeconds.collectLatest { seconds ->
-            nm.notify(
-                NotificationHelper.NOTIF_PERSISTENT_ID,
-                NotificationHelper.buildPersistentNotification(this, seconds)
-            )
-        }
     }
 
     private suspend fun pollLoop() {
@@ -60,14 +50,41 @@ class UsageTrackingService : Service() {
         while (true) {
             try {
                 val tracked = prefs.trackedPackages.first()
+                val names = prefs.displayNames.first()
                 if (tracked.isNotEmpty()) {
-                    repo.syncFromUsageStats(tracked)
-                    _totalSeconds.value = repo.loadToday().totalSeconds()
+                    val foreground = repo.getForegroundApp()
+                    val activePkg = foreground?.takeIf { it in tracked }
+
+                    if (activePkg != null) {
+                        // Live mode: sync + show per-app live timer every second
+                        repo.syncFromUsageStats(tracked)
+                        val today = repo.loadToday()
+                        _totalSeconds.value = today.totalSeconds()
+                        val appSeconds = today.seconds[activePkg] ?: 0
+                        val appName = names[activePkg] ?: activePkg.substringAfterLast('.')
+                        nm.notify(
+                            NotificationHelper.NOTIF_PERSISTENT_ID,
+                            NotificationHelper.buildLiveNotification(
+                                this, appName, appSeconds, _totalSeconds.value
+                            )
+                        )
+                        delay(1_000)
+                    } else {
+                        // Idle mode: sync every 30s, show total
+                        repo.syncFromUsageStats(tracked)
+                        _totalSeconds.value = repo.loadToday().totalSeconds()
+                        nm.notify(
+                            NotificationHelper.NOTIF_PERSISTENT_ID,
+                            NotificationHelper.buildPersistentNotification(this, _totalSeconds.value)
+                        )
+                        delay(30_000)
+                    }
+                } else {
+                    delay(30_000)
                 }
             } catch (e: Exception) {
-                // continue polling on next tick
+                delay(30_000)
             }
-            delay(30_000)
         }
     }
 

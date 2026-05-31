@@ -26,6 +26,12 @@ object NotificationHelper {
         ))
     }
 
+    private fun pendingMain(context: Context) = PendingIntent.getActivity(
+        context, 0,
+        Intent(context, MainActivity::class.java),
+        PendingIntent.FLAG_IMMUTABLE
+    )
+
     fun buildPersistentNotification(context: Context, totalSeconds: Int) =
         NotificationCompat.Builder(context, CHANNEL_PERSISTENT)
             .setSmallIcon(android.R.drawable.ic_menu_recent_history)
@@ -33,14 +39,25 @@ object NotificationHelper {
             .setContentText("Tap to see your usage")
             .setOngoing(true)
             .setSilent(true)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    context, 0,
-                    Intent(context, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            .setContentIntent(pendingMain(context))
             .build()
+
+    fun buildLiveNotification(context: Context, appName: String, appSeconds: Int, totalSeconds: Int) =
+        NotificationCompat.Builder(context, CHANNEL_PERSISTENT)
+            .setSmallIcon(android.R.drawable.ic_menu_recent_history)
+            .setContentTitle("$appName — ${formatTimeLive(appSeconds)}")
+            .setContentText("${formatTime(totalSeconds)} total today")
+            .setOngoing(true)
+            .setSilent(true)
+            .setContentIntent(pendingMain(context))
+            .build()
+
+    fun formatTimeLive(totalSeconds: Int): String {
+        val h = totalSeconds / 3600
+        val m = (totalSeconds % 3600) / 60
+        val s = totalSeconds % 60
+        return if (h > 0) "${h}h ${m}m ${s}s" else if (m > 0) "${m}m ${s}s" else "${s}s"
+    }
 
     fun showMilestoneNotification(context: Context, hours: Int) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

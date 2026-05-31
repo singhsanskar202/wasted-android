@@ -1,5 +1,6 @@
 package com.wasted.data.repository
 
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import com.wasted.data.db.UsageDao
@@ -46,6 +47,23 @@ class UsageRepository(
         ) ?: return emptyMap()
         return stats.filter { it.totalTimeInForeground > 0 }
             .associate { it.packageName to it.totalTimeInForeground }
+    }
+
+    // Returns the package name of the app currently in the foreground, or null.
+    // Uses a 2-second window looking backwards — the most reliable method without
+    // AccessibilityService or shell access.
+    fun getForegroundApp(): String? {
+        val now = System.currentTimeMillis()
+        val events = usageStatsManager.queryEvents(now - 2000, now) ?: return null
+        val event = UsageEvents.Event()
+        var last: String? = null
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            if (event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                last = event.packageName
+            }
+        }
+        return last
     }
 
     suspend fun syncFromUsageStats(trackedPackages: Set<String>) {
